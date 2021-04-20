@@ -14,8 +14,8 @@ namespace JiraUserSync
     {
         [FunctionName("Function1")]
         public static void Run([TimerTrigger("0 0 13 * * *")] TimerInfo myTimer, ILogger log)//should be  daily 7pm
-        //    public static void Run([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer, ILogger log)
-            {
+        //public static void Run([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer, ILogger log)
+        {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             //dicts to hold customer / org customer lists
@@ -45,11 +45,11 @@ namespace JiraUserSync
             if (Post.accountIds.Length > 0)
             {
                 string body = JsonConvert.SerializeObject(Post);
-               // var re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.DELETE, body);
+                // var re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.DELETE, body);
             }
             return;
         }
-        public static Dictionary<string,string> getAllMembers(string url)
+        public static Dictionary<string, string> getAllMembers(string url)
         {
             string furl = "https://raincityhousing.atlassian.net" + url;
             Dictionary<string, string> retList = new Dictionary<string, string>();

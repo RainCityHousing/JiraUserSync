@@ -1,11 +1,16 @@
 {
-    "version": "2.0",
-    "logging": {
-        "applicationInsights": {
-            "samplingExcludedTypes": "Request",
-            "samplingSettings": {
-                "isEnabled": true
-            }
-        }
+  "version": "2.0",
+  "logging": {
+    "fileLoggingMode": "debugOnly",
+    "logLevel": {
+      "Function.Function1": "Information",
+      "default": "None"
+    },
+    "applicationInsights": {
+      "samplingExcludedTypes": "Request",
+      "samplingSettings": {
+        "isEnabled": true
+      }
     }
+  }
 }
