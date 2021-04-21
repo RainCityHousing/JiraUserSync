@@ -21,7 +21,6 @@ namespace JiraUserSync
             //dicts to hold customer / org customer lists
             Dictionary<string, string> custListDict = getAllMembers("/rest/servicedeskapi/servicedesk/OP/customer");
             Dictionary<string, string> orgListDict = getAllMembers("/rest/servicedeskapi/organization/3/user");
-
             log.LogInformation("Customer list size is: " + custListDict.Count);
             log.LogInformation("org list size is: " + orgListDict.Count);
 
@@ -30,23 +29,25 @@ namespace JiraUserSync
             post Post = new post();
             Post.accountIds = accountIds.ToArray<string>();
             log.LogInformation("Adding " + Post.accountIds.Count() + " people to org");
+            //var re = new IRestResponse;
             if (Post.accountIds.Length > 0)
             {
                 string body = JsonConvert.SerializeObject(Post);
-                var re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.POST, body);
+              var  re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.POST, body);
             }
             else
             {
                 log.LogInformation("No new customers to add");
             }
-            var accountIdsToRemove = orgListDict.Keys.Except(custListDict.Keys);
-            Post.accountIds = accountIdsToRemove.ToArray<string>();
-            log.LogInformation("Customers to remove from org: " + accountIdsToRemove.Count());
-            if (Post.accountIds.Length > 0)
-            {
-                string body = JsonConvert.SerializeObject(Post);
-                // var re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.DELETE, body);
-            }
+            //removing doesn't seem necessary - they seem to drop off the customer / org lists on AD account deletion
+            //var accountIdsToRemove = orgListDict.Keys.Except(custListDict.Keys);
+            //Post.accountIds = accountIdsToRemove.ToArray<string>();
+            //log.LogInformation("Customers to remove from org: " + accountIdsToRemove.Count());
+            //if (Post.accountIds.Length > 0)
+            //{
+            //    //string body = JsonConvert.SerializeObject(Post);
+            //    // var re = JiraAPICall("https://raincityhousing.atlassian.net/rest/servicedeskapi/organization/3/user", Method.DELETE, body);
+            //}
             return;
         }
         public static Dictionary<string, string> getAllMembers(string url)
@@ -59,7 +60,11 @@ namespace JiraUserSync
             var firstcall = JiraAPICall(furl, Method.GET, "default", headers);
             CustomerList CustList = JsonConvert.DeserializeObject<CustomerList>(firstcall.Content);
             foreach (var y in CustList.Values)
-                retList.Add(y.AccountId, y.EmailAddress);
+            {
+                if (y.EmailAddress != null && y.EmailAddress != "")
+                    if (y.Active)
+                        retList.Add(y.AccountId, y.EmailAddress);
+            }
             currentIndex = CustList.Start + CustList.Size;
             while (CustList.IsLastPage == false)
             {
